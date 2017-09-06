@@ -9,14 +9,12 @@
  **************************************************************************/
 
 // You can change these to give your code its own name.
-//#define STR_MANUFACTURER	L"Slashdev"
-//#define STR_PRODUCT		L"PS3 Gamepad"
 #define STR_MANUFACTURER	L"32teeth"
 #define STR_PRODUCT		L"Sparky Jr. Arcade Stick"
 
 /*
 	input mapping to ATMEGA32U4
-	
+
 	PC	PS3	Port
 	---------------------------
 	U	U	D2
@@ -33,8 +31,8 @@
 	8	R2	B5
 	9	Se	D5
 	10	St	D4
-	11	
-	12	
+	11
+	12
 	13	PS	D7
 */
 
@@ -94,7 +92,7 @@ static const uint8_t PROGMEM endpoint_config_table[] = {
 // spec and relevant portions of any USB class specifications!
 
 
-static uint8_t PROGMEM device_descriptor[] = {
+static const uint8_t PROGMEM device_descriptor[] = {
 	18,					// bLength
 	1,					// bDescriptorType
 	0x10, 0x01,				// bcdUSB
@@ -111,7 +109,7 @@ static uint8_t PROGMEM device_descriptor[] = {
 	1					// bNumConfigurations
 };
 
-static uint8_t PROGMEM gamepad_hid_report_desc[] = {
+static const uint8_t PROGMEM gamepad_hid_report_desc[] = {
 	0x05, 0x01,        // USAGE_PAGE (Generic Desktop)
 	0x09, 0x05,        // USAGE (Gamepad)
 	0xa1, 0x01,        // COLLECTION (Application)
@@ -125,11 +123,11 @@ static uint8_t PROGMEM gamepad_hid_report_desc[] = {
 	0x19, 0x01,        //   USAGE_MINIMUM (Button 1)
 	0x29, 0x0d,        //   USAGE_MAXIMUM (Button 13)
 	/*
-		 0:0x00  1:0x01  2:0x02  3:0x03  4:0x04  5:0x05  6:0x06  7:0x07  8:0x08 9:0x09 
-		10:0x0a 11:0x0b 12:0x0c 13:0x0d 14:0x0e 15:0x0f 16:0x10 17:0x11 18:0x12 19:0x13 
-		20:0x14 21:0x15 22:0x16 23:0x17 24:0x18 25:0x19 26:0x1a 27:0x1b 28:0x1c 29:0x1d 
-		30:0x1e 31:0x1f 32:0x20 33:0x21 34:0x22 35:0x23 36:0x24 37:0x25 38:0x26 39:0x27 
-		40:0x28 41:0x29 42:0x2a 43:0x2b 44:0x2c 45:0x2d 46:0x2e 47:0x2f 48:0x30 49:0x31 
+		 0:0x00  1:0x01  2:0x02  3:0x03  4:0x04  5:0x05  6:0x06  7:0x07  8:0x08 9:0x09
+		10:0x0a 11:0x0b 12:0x0c 13:0x0d 14:0x0e 15:0x0f 16:0x10 17:0x11 18:0x12 19:0x13
+		20:0x14 21:0x15 22:0x16 23:0x17 24:0x18 25:0x19 26:0x1a 27:0x1b 28:0x1c 29:0x1d
+		30:0x1e 31:0x1f 32:0x20 33:0x21 34:0x22 35:0x23 36:0x24 37:0x25 38:0x26 39:0x27
+		40:0x28 41:0x29 42:0x2a 43:0x2b 44:0x2c 45:0x2d 46:0x2e 47:0x2f 48:0x30 49:0x31
 	*/
 	0x81, 0x02,        //   INPUT (Data,Var,Abs)
 	0x95, 0x03,        //   REPORT_COUNT (3)
@@ -178,7 +176,7 @@ static uint8_t PROGMEM gamepad_hid_report_desc[] = {
 
 #define CONFIG1_DESC_SIZE		(9+9+9+7)
 #define GAMEPAD_HID_DESC_OFFSET	(9+9)
-static uint8_t PROGMEM config1_descriptor[CONFIG1_DESC_SIZE] = {
+static const uint8_t PROGMEM config1_descriptor[CONFIG1_DESC_SIZE] = {
 	// configuration descriptor, USB spec 9.6.3, page 264-266, Table 9-10
 	9, 					// bLength;
 	2,					// bDescriptorType;
@@ -220,22 +218,22 @@ static uint8_t PROGMEM config1_descriptor[CONFIG1_DESC_SIZE] = {
 // If you're desperate for a little extra code memory, these strings
 // can be completely removed if iManufacturer, iProduct, iSerialNumber
 // in the device desciptor are changed to zeros.
-struct usb_string_descriptor_struct {
+static const struct usb_string_descriptor_struct {
 	uint8_t bLength;
 	uint8_t bDescriptorType;
 	int16_t wString[];
 };
-static struct usb_string_descriptor_struct PROGMEM string0 = {
+static const  struct usb_string_descriptor_struct PROGMEM string0 = {
 	4,
 	3,
 	{0x0409}
 };
-static struct usb_string_descriptor_struct PROGMEM string1 = {
+static const  struct usb_string_descriptor_struct PROGMEM string1 = {
 	sizeof(STR_MANUFACTURER),
 	3,
 	STR_MANUFACTURER
 };
-static struct usb_string_descriptor_struct PROGMEM string2 = {
+static const  struct usb_string_descriptor_struct PROGMEM string2 = {
 	sizeof(STR_PRODUCT),
 	3,
 	STR_PRODUCT
@@ -243,7 +241,7 @@ static struct usb_string_descriptor_struct PROGMEM string2 = {
 
 // This table defines which descriptor data is sent for each specific
 // request from the host (in wValue and wIndex).
-static struct descriptor_list_struct {
+static const  struct descriptor_list_struct {
 	uint16_t	wValue;
 	uint16_t	wIndex;
 	const uint8_t	*addr;
@@ -269,7 +267,7 @@ static struct descriptor_list_struct {
 // zero when we are not configured, non-zero when enumerated
 static volatile uint8_t usb_configuration = 0;
 
-static gamepad_state_t PROGMEM gamepad_idle_state = {
+static const  gamepad_state_t PROGMEM gamepad_idle_state = {
 	.triangle_btn = 0, .square_btn = 0, .cross_btn = 0, .circle_btn = 0,
 	.l1_btn = 0, .r1_btn = 0, .l2_btn = 0, .r2_btn = 0,
 	.select_btn = 0, .start_btn = 0, .ps_btn = 0,
@@ -285,7 +283,7 @@ static gamepad_state_t PROGMEM gamepad_idle_state = {
  * descriptor is sent to the host. They where discovered by tracing output
  * from a Madcatz SF4 Joystick. Sending these bytes makes the PS button work.
  */
-static uint8_t PROGMEM magic_init_bytes[] = {
+static const uint8_t PROGMEM magic_init_bytes[] = {
 	0x21, 0x26, 0x01, 0x07, 0x00, 0x00, 0x00, 0x00
 };
 
